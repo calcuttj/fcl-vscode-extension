@@ -1,0 +1,18 @@
+#### include "common_settings.fcl"
+BEGIN_PROLOG
+base_params: {
+  threshold: 3.5e-2
+  name: "hello"
+  flags: [ true, false, nil ]
+}
+END_PROLOG
+some_sequence: [1,2]
+
+process_name: Demo   # trailing comment
+physics.analyzers.ana: {
+  module_type: MyAnalyzer
+  @table::base_params
+  seq: @local::some_sequence
+  # tags: @sequence::my_tags
+  extra: @erase
+}

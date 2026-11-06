@@ -1,0 +1,12 @@
+# Open this in the Extension Development Host; each numbered case should be flagged.
+#include "does_not_exist.fcl"      # 1: warning, cannot find include (if a search path is known)
+
+BEGIN_PROLOG
+good: { a: 1 }
+END_PROLOG
+
+ok: @local::good
+bad_ref: @local::nothing_like_this   # 2: suppressed here because of the missing include above
+1abc: 5                              # 3: name starts with a digit
+url: http://example.com              # 4: unquoted special characters
+seq: [1, 2,]                         # 5: trailing comma

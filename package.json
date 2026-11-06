@@ -1,0 +1,250 @@
+{
+  "name": "fcl-vscode",
+  "displayName": "FHiCL",
+  "description": "FHiCL (.fcl) support: syntax checking, navigation, and a fhicl-dump preview of the resolved configuration, with per-window UPS/mrb environments",
+  "version": "0.0.1",
+  "publisher": "local",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "main": "./out/extension.js",
+  "activationEvents": [
+    "onLanguage:fhicl"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "fhicl",
+        "aliases": [
+          "FHiCL",
+          "fhicl"
+        ],
+        "extensions": [
+          ".fcl"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "fhicl",
+        "scopeName": "source.fhicl",
+        "path": "./syntaxes/fhicl.tmLanguage.json"
+      }
+    ],
+    "configuration": {
+      "title": "FHiCL",
+      "properties": {
+        "fhicl.diagnostics.enable": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show syntax errors and undefined-reference warnings as you type (built-in parser)."
+        },
+        "fhicl.fhiclFilePath": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Extra directories searched for #include files, in addition to FHICL_FILE_PATH. Also appended to FHICL_FILE_PATH when running fhicl-dump. Supports ${workspaceFolder}. Useful in mrb development, where your source .fcl files are not on FHICL_FILE_PATH."
+        },
+        "fhicl.validateOnSave": {
+          "type": "boolean",
+          "default": false,
+          "description": "Run fhicl-dump on every save of a .fcl file. Off by default; the 'FHiCL: Validate with fhicl-dump' command always works on demand."
+        },
+        "fhicl.commandPrefix": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Default container wrapper for all environments (an environment can override it), one argument per entry, e.g. [\"apptainer\",\"exec\",\"-B\",\"/cvmfs\",\"/path/to/image.sif\"]. The workspace must be visible at the same path inside the container."
+        },
+        "fhicl.dumpPath": {
+          "type": "string",
+          "default": "",
+          "description": "fhicl-dump executable (default: 'fhicl-dump' on the PATH of the configured environment)."
+        },
+        "fhicl.expandPath": {
+          "type": "string",
+          "default": "",
+          "description": "fhicl-expand executable (default: 'fhicl-expand' on the PATH of the configured environment)."
+        },
+        "fhicl.timeoutSeconds": {
+          "type": "number",
+          "default": 120,
+          "minimum": 1,
+          "description": "Time limit for each environment capture or tool run (container start-up can be slow)."
+        },
+        "fhicl.runMode": {
+          "type": "string",
+          "enum": [
+            "container",
+            "cachedHost"
+          ],
+          "default": "container",
+          "enumDescriptions": [
+            "Run every tool inside the configured container/setup (slow start, always consistent).",
+            "Capture the environment once, then run tools directly on this machine with it (fast). Needs the tool's shared libraries to be reachable from the host; falls back to the container if the tool cannot start."
+          ],
+          "description": "Default run mode for all environments (an environment can override it). 'cachedHost' captures the environment once, then runs tools directly on this machine."
+        },
+        "fhicl.extraLibraryPath": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "Default directories added to LD_LIBRARY_PATH for host runs (cachedHost), for all environments; an environment can override it."
+        },
+        "fhicl.environments": {
+          "type": "array",
+          "default": [],
+          "markdownDescription": "Named FHiCL environments. Each VS Code window picks one from the status bar (**FHiCL: \u2026**), so two windows can use two different UPS/mrb setups. Fields other than `name` are optional; unset fields use the top-level `fhicl.*` defaults.",
+          "items": {
+            "type": "object",
+            "required": [
+              "name"
+            ],
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string",
+                "description": "Shown in the status bar and picker; must be unique."
+              },
+              "setupCommand": {
+                "type": "string",
+                "description": "Shell snippet run (in bash -l) before FHiCL tools, e.g. 'source /cvmfs/.../setup_dune.sh; setup dunesw v10_26_00d05 -q e26:prof' or 'source ~/dev/localProducts_*/setup; mrbslp'."
+              },
+              "commandPrefix": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Overrides fhicl.commandPrefix for this environment ([] = no container)."
+              },
+              "runMode": {
+                "type": "string",
+                "enum": [
+                  "container",
+                  "cachedHost"
+                ],
+                "description": "Overrides fhicl.runMode for this environment."
+              },
+              "extraLibraryPath": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Overrides fhicl.extraLibraryPath for this environment."
+              },
+              "fhiclFilePath": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "Extra #include directories for this environment, searched before fhicl.fhiclFilePath. Supports ${workspaceFolder}."
+              }
+            }
+          }
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "fhicl.preview",
+        "title": "Open Resolved Configuration Preview to the Side",
+        "category": "FHiCL",
+        "icon": "$(open-preview)"
+      },
+      {
+        "command": "fhicl.selectEnvironment",
+        "title": "Select Environment for This Window",
+        "category": "FHiCL",
+        "icon": "$(beaker)"
+      },
+      {
+        "command": "fhicl.validate",
+        "title": "Validate with fhicl-dump",
+        "category": "FHiCL"
+      },
+      {
+        "command": "fhicl.reloadEnvironment",
+        "title": "Reload Environment (re-run setup for this window's environment)",
+        "category": "FHiCL"
+      },
+      {
+        "command": "fhicl.showResolved",
+        "title": "Show Resolved Configuration (fhicl-dump -a)",
+        "category": "FHiCL"
+      },
+      {
+        "command": "fhicl.showExpanded",
+        "title": "Show Expanded #includes (fhicl-expand)",
+        "category": "FHiCL"
+      }
+    ],
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "fhicl.preview",
+          "when": "editorLangId == fhicl"
+        },
+        {
+          "command": "fhicl.selectEnvironment"
+        },
+        {
+          "command": "fhicl.validate",
+          "when": "editorLangId == fhicl"
+        },
+        {
+          "command": "fhicl.reloadEnvironment",
+          "when": "editorLangId == fhicl"
+        },
+        {
+          "command": "fhicl.showResolved",
+          "when": "editorLangId == fhicl"
+        },
+        {
+          "command": "fhicl.showExpanded",
+          "when": "editorLangId == fhicl"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "fhicl.preview",
+          "when": "editorLangId == fhicl",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "build": "tsc -p .",
+    "watch": "tsc -watch -p .",
+    "vscode:prepublish": "npm run build",
+    "test": "tsc -p . && node --test \"out/test/*.test.js\"",
+    "package": "npm test && vsce package --allow-missing-repository"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "~1.85.0",
+    "@vscode/vsce": "^4.1.0",
+    "typescript": "^5.4.0"
+  },
+  "keywords": [
+    "fhicl",
+    "fcl",
+    "art",
+    "larsoft",
+    "dune",
+    "fermilab",
+    "ups",
+    "mrb"
+  ],
+  "license": "Apache-2.0"
+}

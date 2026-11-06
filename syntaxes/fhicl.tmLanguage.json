@@ -1,0 +1,75 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "FHiCL",
+  "scopeName": "source.fhicl",
+  "patterns": [
+    { "include": "#comment" },
+    { "include": "#include" },
+    { "include": "#prolog" },
+    { "include": "#reference" },
+    { "include": "#directive" },
+    { "include": "#key" },
+    { "include": "#string" },
+    { "include": "#constant" },
+    { "include": "#number" }
+  ],
+  "repository": {
+    "comment": {
+      "match": "(#|//).*$",
+      "name": "comment.line.number-sign.fhicl"
+    },
+    "include": {
+      "match": "^\\s*(#include)\\s+(\"[^\"]*\")",
+      "captures": {
+        "1": { "name": "keyword.control.import.fhicl" },
+        "2": { "name": "string.quoted.double.include.fhicl" }
+      }
+    },
+    "prolog": {
+      "match": "\\b(BEGIN_PROLOG|END_PROLOG)\\b",
+      "name": "keyword.control.prolog.fhicl"
+    },
+    "reference": {
+      "match": "(@(?:local|table|sequence|db))(::)([A-Za-z_][A-Za-z0-9_.\\-]*)",
+      "captures": {
+        "1": { "name": "keyword.other.reference.fhicl" },
+        "2": { "name": "punctuation.separator.fhicl" },
+        "3": { "name": "variable.other.reference.fhicl" }
+      }
+    },
+    "directive": {
+      "match": "@(?:nil|erase|protect_ignore|protect_error)\\b:?",
+      "name": "keyword.other.directive.fhicl"
+    },
+    "key": {
+      "match": "^\\s*((?:@[a-z_]+::)?[A-Za-z_][A-Za-z0-9_\\-]*(?:\\.[A-Za-z_][A-Za-z0-9_\\-]*|\\[\\d+\\])*)\\s*(?=:)",
+      "captures": {
+        "1": { "name": "variable.other.property.fhicl" }
+      }
+    },
+    "string": {
+      "patterns": [
+        {
+          "begin": "\"",
+          "end": "\"",
+          "name": "string.quoted.double.fhicl",
+          "patterns": [{ "match": "\\\\.", "name": "constant.character.escape.fhicl" }]
+        },
+        {
+          "begin": "'",
+          "end": "'",
+          "name": "string.quoted.single.fhicl",
+          "patterns": [{ "match": "\\\\.", "name": "constant.character.escape.fhicl" }]
+        }
+      ]
+    },
+    "constant": {
+      "match": "\\b(true|false|nil|infinity|\\+infinity|-infinity)\\b",
+      "name": "constant.language.fhicl"
+    },
+    "number": {
+      "match": "(?<![\\w.])[+-]?(?:\\d+\\.?\\d*|\\.\\d+)(?:[eE][+-]?\\d+)?(?![\\w.])",
+      "name": "constant.numeric.fhicl"
+    }
+  }
+}
