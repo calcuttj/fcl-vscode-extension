@@ -104,7 +104,7 @@
         "fhicl.environments": {
           "type": "array",
           "default": [],
-          "markdownDescription": "Named FHiCL environments. Each VS Code window picks one from the status bar (**FHiCL: \u2026**), so two windows can use two different UPS/mrb setups. Fields other than `name` are optional; unset fields use the top-level `fhicl.*` defaults.",
+          "markdownDescription": "Named FHiCL environments. Each VS Code window picks one from the status bar (**FHiCL: …**), so two windows can use two different UPS/mrb setups. Fields other than `name` are optional; unset fields use the top-level `fhicl.*` defaults.",
           "items": {
             "type": "object",
             "required": [
@@ -228,7 +228,7 @@
     "watch": "tsc -watch -p .",
     "vscode:prepublish": "npm run build",
     "test": "tsc -p . && node --test \"out/test/*.test.js\"",
-    "package": "npm test && vsce package --allow-missing-repository"
+    "package": "npm test && vsce package"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
@@ -246,5 +246,13 @@
     "ups",
     "mrb"
   ],
-  "license": "Apache-2.0"
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/calcuttj/fcl-vscode-extension.git"
+  },
+  "bugs": {
+    "url": "https://github.com/calcuttj/fcl-vscode-extension/issues"
+  },
+  "homepage": "https://github.com/calcuttj/fcl-vscode-extension#readme"
 }
